@@ -1,7 +1,7 @@
 {
   "schema_version": "traveler-wave-state-v1",
   "generated_at": "2026-10-10T06:24:36+00:00",
-  "active_wave": null,
+  "active_wave": "W01",
   "waves": [
     {
       "wave_id": "W01",
@@ -13,7 +13,7 @@
         "SHARED-DESIGN-TOKENS",
         "SHARED-FAVORITES-LOCALSTORAGE"
       ],
-      "status": "pending",
+      "status": "blocked",
       "checkpoint_required": false,
       "checkpoint_result": null
     },
@@ -183,5 +183,11 @@
       "checkpoint_required": true,
       "checkpoint_result": null
     }
-  ]
+  ],
+  "task_status": {
+    "DATA-DESTINATIONS": {
+      "status": "blocked",
+      "reason": "BLOCKED_DIRTY_TREE: Expected Files 밖 변경 3건 (.claude/commands/release-check.md, .claude/commands/run-wave.md, TASKS/_generated/validate_inputs_report.json)"
+    }
+  }
 }

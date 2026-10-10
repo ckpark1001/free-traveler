@@ -16,12 +16,13 @@ Skill이 아직 컨텍스트에 없다면 먼저 `Skill(traveler-project-pipelin
 
 `TASKS/WAVE_STATE.json`과 `TASKS/WAVE_PLAN.md`를 읽는다.
 - `TASKS/WAVE_STATE.json`이 없으면 이 검사는 즉시 실패다("실행 이력을 확인할 수 없음").
-- `TASKS/WAVE_PLAN.md`에 정의된 모든 Wave의 `status`가 `DONE`이어야 한다. 하나라도 `PENDING`/`IN_PROGRESS`/`BLOCKED`/`WAITING_FOR_PREVIEW`면 실패이고, 어떤 Wave·Task가 남아 있는지 나열한다.
-- `TASKS/TASK_MANIFEST.csv`의 모든 Task ID가 `WAVE_STATE.json`에서 `DONE`인지 대조한다. 빠진 Task가 있으면 실패.
+- `TASKS/WAVE_PLAN.md`의 Wave ID 목록과 `WAVE_STATE.json`의 `waves[].wave_id`가 일치해야 한다. 다르면 실패.
+- 모든 Wave의 `status`가 `completed`여야 한다. 하나라도 `pending`/`in_progress`/`blocked`면 실패이고, 어떤 Wave·Task가 남아 있는지 나열한다. 모든 Task가 `done`인데 `checkpoint_required`가 true이고 `checkpoint_result`가 `null`인 Wave(WAITING_FOR_PREVIEW)도 `completed`가 아니므로 실패다.
+- `TASKS/TASK_MANIFEST.csv`의 모든 Task ID가 `WAVE_STATE.json`의 `task_status`에서 `status`가 `done`인지 대조한다. `task_status`에 없거나 `done`이 아닌 Task가 있으면 실패.
 
-### 2. 5개 Page Owner DONE
+### 2. 5개 Page Owner done
 
-`TASKS/TASK_MANIFEST.csv`에서 Category가 `PAGE_OWNER`인 5개 Task(`PAGE-SCR001`~`PAGE-SCR005`)를 찾아 `WAVE_STATE.json`에서 전부 `DONE`인지 확인한다. 하나라도 아니면 실패이고 어떤 Screen이 남았는지 명시한다(핵심 4개/보조 1개 구분 없이 5개 전부 필요).
+`TASKS/TASK_MANIFEST.csv`에서 Category가 `PAGE_OWNER`인 5개 Task(`PAGE-SCR001`~`PAGE-SCR005`)를 찾아 `WAVE_STATE.json`의 `task_status`에서 전부 `done`인지 확인한다. 하나라도 아니면 실패이고 어떤 Screen이 남았는지 명시한다(핵심 4개/보조 1개 구분 없이 5개 전부 필요).
 
 ### 3. CI PASS
 
@@ -31,20 +32,20 @@ Skill이 아직 컨텍스트에 없다면 먼저 `Skill(traveler-project-pipelin
 
 ### 4. Playwright Smoke PASS
 
-- `TASKS/WAVE_STATE.json`에서 `E2E-PUBLIC-SMOKE`, `E2E-TRAVEL-TOOLS`, `E2E-MATE-AUTH` 3개 Task가 전부 `DONE`인지 확인한다.
-- 3번 검사에서 조회한 최근 CI 실행(또는 그에 준하는 기록)에 Playwright Chromium Smoke 실행 결과가 포함되어 있고 통과했는지 확인한다. `DONE` 상태만 있고 실제 통과 기록이 없으면 실패로 본다("상태만 있고 근거 없음").
+- `TASKS/WAVE_STATE.json`의 `task_status`에서 `E2E-PUBLIC-SMOKE`, `E2E-TRAVEL-TOOLS`, `E2E-MATE-AUTH` 3개 Task가 전부 `done`인지 확인한다.
+- 3번 검사에서 조회한 최근 CI 실행(또는 그에 준하는 기록)에 Playwright Chromium Smoke 실행 결과가 포함되어 있고 통과했는지 확인한다. `done` 상태만 있고 실제 통과 기록이 없으면 실패로 본다("상태만 있고 근거 없음").
 - Chromium 외 브라우저가 추가되어 있으면(구성 파일에서 확인) 실패로 기록한다(`CLAUDE.md` 규칙 18 위반).
 
 ### 5. Supabase 6개 Table·기본 RLS 확인 기록
 
 - `python scripts/audit_tasks.py`를 실행한다. 종료 코드가 0이 아니면(=`AUDIT_FAIL`) 이 검사는 실패이고, 특히 검사 #11(DB Schema/RLS/Access/Seed 존재)과 #12(테이블 개수) 결과를 인용한다.
-- `TASKS/WAVE_STATE.json`에서 `DB-SCHEMA-BASE`, `DB-RLS-BASE`, `DB-ACCESS`, `DB-SEED-BASE`, `TEST-RLS-BASIC` 5개 Task가 전부 `DONE`인지 확인한다.
-- `supabase/migrations/*.sql`이 실제로 존재하면 그 안의 테이블 정의가 정확히 6개(`user_profile`, `mate_post`, `mate_application`, `user_block`, `report`, `outbound_link_setting`)와 일치하는지 확인한다. 마이그레이션 디렉터리 자체가 없으면 실패로 본다.
+- `TASKS/WAVE_STATE.json`의 `task_status`에서 `DB-SCHEMA-BASE`, `DB-RLS-BASE`, `DB-ACCESS`, `DB-SEED-BASE`, `TEST-RLS-BASIC` 5개 Task가 전부 `done`인지 확인한다.
+- `supabase/migrations/*.sql`이 실제로 존재하면 그 안의 테이블 정의가 정확히 6개(`profiles`, `mate_posts`, `mate_applications`, `blocks`, `reports`, `app_settings`)와 일치하는지 확인한다. 마이그레이션 디렉터리 자체가 없으면 실패로 본다.
 
 ### 6. Vercel Preview Checkpoint
 
-- `TASKS/WAVE_PLAN.md`에서 `Preview Checkpoint`가 "없음"이 아닌 모든 Wave를 찾는다.
-- 그 Wave들이 `TASKS/WAVE_STATE.json`에서 전부 `DONE`(즉 `WAITING_FOR_PREVIEW`에 머물러 있지 않고 사람 확인 후 정상적으로 다음으로 넘어간 상태)인지 확인한다. 하나라도 `WAITING_FOR_PREVIEW`로 남아 있으면 실패다 — 사람이 아직 그 Preview를 확인하지 않았다는 뜻이다.
+- `TASKS/WAVE_PLAN.md`에서 `Preview Checkpoint`가 "없음"이 아닌 모든 Wave와, `TASKS/WAVE_STATE.json`에서 `checkpoint_required`가 true인 모든 Wave를 합쳐 찾는다.
+- 그 Wave들이 전부 `status`가 `completed`이고 `checkpoint_result`가 `"passed"`인지 확인한다. `checkpoint_result`가 `null`(WAITING_FOR_PREVIEW)이거나 `"failed"`이면 실패다 — 사람이 아직 그 Preview를 확인하지 않았거나 확인에서 통과하지 못했다는 뜻이다. 이 Command는 `checkpoint_result`를 스스로 채우지 않는다.
 - Vercel CLI/대시보드 접근이 가능하면 해당 Wave 시점의 Preview 배포가 실제로 존재했는지 추가로 대조한다(선택 사항 — 접근 불가하면 `WAVE_STATE.json` 기록만으로 판단하고 그 사실을 보고서에 남긴다).
 
 ### 7. EXCLUDED 목록
