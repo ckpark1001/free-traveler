@@ -1,0 +1,28 @@
+# dependencies / build output
+node_modules/
+.next/
+out/
+build/
+coverage/
+
+# test artifacts
+playwright-report/
+test-results/
+blob-report/
+
+# env / secrets
+.env*
+*.pem
+
+# python / editor / OS
+__pycache__/
+*.pyc
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+npm-debug.log*
+
+# local tool state
+.claude/settings.local.json
+.omc/

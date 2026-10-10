@@ -1,0 +1,174 @@
+{
+  "schema_version": "traveler-screen-route-v1",
+  "framework": "nextjs-app-router",
+  "project_root": "app",
+  "source_documents": [
+    "app/docs/03_UI_COVERAGE_ANALYSIS.md",
+    "app/docs/04_UIUX_PLAN.md",
+    "app/docs/PROJECT_SCOPE.md",
+    "docs/STITCH_VALIDATION_REPORT.md",
+    "design-reference/D-001/DESIGN.md"
+  ],
+  "classification_summary": {
+    "core": ["SCR-001", "SCR-002", "SCR-003", "SCR-004"],
+    "auxiliary": ["SCR-005"]
+  },
+  "screens": [
+    {
+      "screen_id": "SCR-001",
+      "name": "홈",
+      "route": "/",
+      "page_entry": "src/app/page.tsx",
+      "classification": "core",
+      "page_owner_task_required": true,
+      "preview_required": true,
+      "starter_template_forbidden": true
+    },
+    {
+      "screen_id": "SCR-002",
+      "name": "대표 소개",
+      "route": "/about",
+      "page_entry": "src/app/about/page.tsx",
+      "classification": "core",
+      "page_owner_task_required": true,
+      "preview_required": true
+    },
+    {
+      "screen_id": "SCR-003",
+      "name": "항공·호텔·동행 준비",
+      "route": "/travel-tools",
+      "page_entry": "src/app/travel-tools/page.tsx",
+      "classification": "core",
+      "page_owner_task_required": true,
+      "preview_required": true
+    },
+    {
+      "screen_id": "SCR-004",
+      "name": "동행 찾기",
+      "route": "/mates",
+      "page_entry": "src/app/mates/page.tsx",
+      "classification": "core",
+      "page_owner_task_required": true,
+      "preview_required": true
+    },
+    {
+      "screen_id": "SCR-005",
+      "name": "계정",
+      "route": "/account",
+      "page_entry": "src/app/account/page.tsx",
+      "classification": "auxiliary",
+      "page_owner_task_required": true,
+      "preview_required": true
+    }
+  ],
+  "technical_routes": [
+    {
+      "type": "auth_callback",
+      "route": "/auth/callback",
+      "file": "src/app/auth/callback/route.ts",
+      "counted_as_screen": false,
+      "description": "Supabase 이메일 인증·비밀번호 재설정 리다이렉트 처리 후 SCR-005로 복귀",
+      "resolves_to_screen": "SCR-005"
+    },
+    {
+      "type": "api_route",
+      "route": "/api/*",
+      "file": "src/app/api/**/route.ts",
+      "counted_as_screen": false,
+      "description": "동행 모집글·참가 요청·신고·차단·관리자 외부 URL 설정을 처리하는 서버 Route Handler 집합",
+      "resolves_to_screen": ["SCR-003", "SCR-004", "SCR-005"]
+    },
+    {
+      "type": "not_found",
+      "route": "*",
+      "file": "src/app/not-found.tsx",
+      "counted_as_screen": false,
+      "description": "전역 404 처리, 홈(SCR-001) 복귀 CTA 제공. 5개 Screen 어디서든 발생 가능",
+      "resolves_to_screen": "SCR-001"
+    }
+  ],
+  "required_navigation": [
+    {
+      "from": "SCR-001",
+      "to": "SCR-002",
+      "trigger": "free_traveler 요약 CTA Banner"
+    },
+    {
+      "from": "SCR-001",
+      "to": "SCR-003",
+      "trigger": "Hero 보조 CTA(항공·호텔 조건 먼저 정리하기)"
+    },
+    {
+      "from": "SCR-001",
+      "to": "SCR-004",
+      "trigger": "최근 동행 소식 카드/작성 CTA"
+    },
+    {
+      "from": "SCR-001",
+      "to": "external",
+      "trigger": "안전정보 Drawer 내 외교부 원문 링크",
+      "target": "https://www.0404.go.kr/ (새 탭)"
+    },
+    {
+      "from": "SCR-002",
+      "to": "SCR-001",
+      "trigger": "추천 여행지 카드 클릭"
+    },
+    {
+      "from": "SCR-002",
+      "to": "SCR-003",
+      "trigger": "CTA Banner: 여행 조건을 정리해볼까요?"
+    },
+    {
+      "from": "SCR-002",
+      "to": "SCR-004",
+      "trigger": "CTA Banner: 함께 갈 동행을 찾아볼까요?"
+    },
+    {
+      "from": "SCR-002",
+      "to": "external",
+      "trigger": "문의·SNS 링크"
+    },
+    {
+      "from": "SCR-003",
+      "to": "external",
+      "trigger": "항공편/호텔 보러 가기 (새 탭, noopener/noreferrer, query 없음)",
+      "target": "FLIGHT_OUTBOUND_URL / HOTEL_OUTBOUND_URL"
+    },
+    {
+      "from": "SCR-003",
+      "to": "SCR-004",
+      "trigger": "동행 게시 완료"
+    },
+    {
+      "from": "SCR-003",
+      "to": "SCR-005",
+      "trigger": "동행 탭 비로그인·성인 미확인 안내"
+    },
+    {
+      "from": "SCR-004",
+      "to": "SCR-003",
+      "trigger": "동행글 작성하기 CTA"
+    },
+    {
+      "from": "SCR-004",
+      "to": "SCR-005",
+      "trigger": "비로그인·성인 미확인 안내"
+    },
+    {
+      "from": "SCR-005",
+      "to": "SCR-004",
+      "trigger": "내 글·참가 요청 상세 이동"
+    },
+    {
+      "from": "SCR-005",
+      "to": "SCR-003",
+      "trigger": "동행글 재작성"
+    }
+  ],
+  "global_header_navigation": {
+    "description": "5개 Screen 공통 Header/Footer에서 상시 도달 가능한 링크. required_navigation의 문맥적 CTA와 별개로 항상 존재한다.",
+    "always_reachable_from_header": ["SCR-001", "SCR-002", "SCR-003", "SCR-004"],
+    "always_reachable_from_account_icon": ["SCR-005"]
+  }
+}

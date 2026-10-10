@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-10-10T06:06:22.709493+00:00",
+  "ok": true,
+  "harness_schema": "traveler-screen-route-v1",
+  "errors": [],
+  "warnings": [],
+  "screen_route_contract": {
+    "screens": [
+      {
+        "screen_id": "SCR-001",
+        "route": "/",
+        "page_entry": "src/app/page.tsx",
+        "classification": "core",
+        "starter_template_forbidden": true,
+        "page_entry_exists": true
+      },
+      {
+        "screen_id": "SCR-002",
+        "route": "/about",
+        "page_entry": "src/app/about/page.tsx",
+        "classification": "core",
+        "starter_template_forbidden": false,
+        "page_entry_exists": false
+      },
+      {
+        "screen_id": "SCR-003",
+        "route": "/travel-tools",
+        "page_entry": "src/app/travel-tools/page.tsx",
+        "classification": "core",
+        "starter_template_forbidden": false,
+        "page_entry_exists": false
+      },
+      {
+        "screen_id": "SCR-004",
+        "route": "/mates",
+        "page_entry": "src/app/mates/page.tsx",
+        "classification": "core",
+        "starter_template_forbidden": false,
+        "page_entry_exists": false
+      },
+      {
+        "screen_id": "SCR-005",
+        "route": "/account",
+        "page_entry": "src/app/account/page.tsx",
+        "classification": "auxiliary",
+        "starter_template_forbidden": false,
+        "page_entry_exists": false
+      }
+    ],
+    "technical_routes": [
+      "auth_callback",
+      "api_route",
+      "not_found"
+    ],
+    "required_navigation_count": 15
+  },
+  "requirement_counts": {
+    "func_total": 80,
+    "nf_total": 34,
+    "total": 114,
+    "implement_count": 90,
+    "excluded_count": 24,
+    "missing_status": [],
+    "duplicate_ids": [],
+    "unrecognized_status": []
+  },
+  "src_app_tree": [
+    "favicon.ico",
+    "globals.css",
+    "layout.tsx",
+    "page.tsx"
+  ]
+}
